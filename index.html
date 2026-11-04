@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>우리 동네 창업 미션</title>
+<meta name="description" content="세종 학생 창업 강연 휴대폰 실습 — ABCDE 미션 카드와 4칸 캔버스">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@800&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#1D1A16;--card:#27231E;--line:#3A342C;--ink:#F6F3EE;--sub:#B9B1A5;--gold:#EBCB94;--amber:#F2B45A;--ok:#EBCB94;--bad:#E58A6A}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--ink);font-family:'Noto Sans KR',system-ui,sans-serif;-webkit-text-size-adjust:100%}
+body{min-height:100dvh;padding:0 16px calc(96px + env(safe-area-inset-bottom))}
+header{position:sticky;top:0;z-index:5;background:var(--bg);padding:14px 0 10px;border-bottom:1px solid var(--line)}
+.brand{font-size:13px;color:var(--gold);letter-spacing:.08em}
+.dots{display:flex;gap:6px;margin-top:10px}
+.dots i{flex:1;height:4px;border-radius:2px;background:var(--line)}
+.dots i.on{background:var(--gold)}
+main{max-width:560px;margin:0 auto}
+section{display:none;padding:22px 0 8px;animation:fade .3s ease}
+section.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.label{font-size:13px;color:var(--gold);margin-bottom:8px}
+h1{font-family:'Nanum Myeongjo',serif;font-weight:800;font-size:30px;line-height:1.3;margin-bottom:12px;word-break:keep-all}
+h2{font-size:20px;font-weight:700;line-height:1.4;margin:18px 0 10px;word-break:keep-all}
+p.lead{color:var(--sub);font-size:16px;line-height:1.6;word-break:keep-all}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:12px}
+label.f{display:block;font-size:14px;color:var(--sub);margin:14px 0 6px}
+input[type=text],textarea{width:100%;background:#14120F;color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:14px;font:inherit;font-size:17px;outline:none}
+textarea{min-height:84px;resize:vertical;line-height:1.5}
+input:focus,textarea:focus{border-color:var(--gold)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip,.opt{border:1px solid var(--line);background:#14120F;color:var(--ink);border-radius:999px;padding:10px 16px;font:inherit;font-size:16px;cursor:pointer}
+.chip.on,.opt.on{border-color:var(--gold);background:var(--gold);color:var(--bg);font-weight:700}
+.opts{display:grid;gap:8px}
+.opt{border-radius:12px;text-align:left;padding:14px}
+.opt.right{border-color:var(--gold);background:rgba(235,203,148,.15);color:var(--gold)}
+.opt.wrong{border-color:var(--bad);color:var(--bad)}
+.why{font-size:14px;color:var(--sub);margin-top:8px;line-height:1.5;display:none}
+.why.on{display:block}
+.mission{display:grid;grid-template-columns:56px 1fr;gap:12px;align-items:center;text-align:left;width:100%;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-top:10px;color:var(--ink);font:inherit;cursor:pointer}
+.mission b{font-family:'Nanum Myeongjo',serif;font-size:34px;color:var(--gold);text-align:center}
+.mission span{font-size:13px;color:var(--sub)}
+.mission strong{display:block;font-size:17px;margin-top:2px}
+.mission.on{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold) inset}
+.canvas{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.cell{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px}
+.cell .q{font-size:13px;color:var(--gold);margin-bottom:6px}
+.cell textarea{min-height:110px;font-size:15px;padding:10px;background:#14120F}
+.more{margin-top:12px}
+.more summary{color:var(--gold);font-size:15px;cursor:pointer;padding:8px 0}
+.hint{font-size:14px;color:var(--sub);line-height:1.5;margin-top:8px}
+.ex{border-left:3px solid var(--gold);padding:8px 12px;margin-top:12px;color:var(--sub);font-size:15px;line-height:1.6}
+.ex b{color:var(--ink)}
+nav.bar{position:fixed;left:0;right:0;bottom:0;z-index:6;background:linear-gradient(transparent,var(--bg) 30%);padding:18px 16px calc(14px + env(safe-area-inset-bottom));display:flex;gap:10px;max-width:592px;margin:0 auto}
+.btn{flex:1;border:0;border-radius:14px;padding:16px;font:inherit;font-size:17px;font-weight:700;cursor:pointer}
+.btn.pri{background:var(--gold);color:var(--bg)}
+.btn.sec{background:var(--card);color:var(--ink);border:1px solid var(--line);flex:0 0 34%}
+.big{font-family:'Nanum Myeongjo',serif;font-weight:800;font-size:40px;color:var(--gold);line-height:1.25;margin:10px 0;word-break:keep-all}
+.timer{font-variant-numeric:tabular-nums;font-size:15px;color:var(--amber)}
+#result img{width:100%;border-radius:12px;border:1px solid var(--line);margin-top:12px}
+.toast{position:fixed;left:50%;top:18px;transform:translateX(-50%);background:var(--gold);color:var(--bg);padding:10px 16px;border-radius:999px;font-weight:700;font-size:15px;opacity:0;transition:.3s;z-index:9;pointer-events:none}
+.toast.on{opacity:1}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div class="brand">JUST DO IT · CONTINUE</div>
+  <div class="dots" id="dots"></div>
+</header>
+
+<!-- 0 시작 -->
+<section data-step="0">
+  <div class="label">오늘의 미션</div>
+  <h1>떨어져도 괜찮아,<br>다시 하면 돼</h1>
+  <p class="lead">선배들의 이야기를 듣고, 내 휴대폰으로 나만의 창업 아이디어를 한 장에 만들어 봐요. 로그인은 필요 없어요.</p>
+  <label class="f" for="nick">별명 (이름 대신)</label>
+  <input type="text" id="nick" maxlength="12" placeholder="예: 세종 발명왕" data-k="nick">
+  <label class="f">나는</label>
+  <div class="chips" data-k="grade" data-single>
+    <button class="chip" type="button" data-v="초등학생">초등학생</button>
+    <button class="chip" type="button" data-v="중학생">중학생</button>
+    <button class="chip" type="button" data-v="고등학생">고등학생</button>
+  </div>
+</section>
+
+<!-- 1 동네 문제 -->
+<section data-step="1">
+  <div class="label">⓪ 시작 · 생각 열기</div>
+  <h1>우리 동네에서<br>짜증 났던 일은?</h1>
+  <p class="lead">딱 한 단어나 짧은 말로 써 보세요.</p>
+  <input type="text" id="annoy" maxlength="20" placeholder="예: 버스 기다리기, 깨진 보도블록" data-k="annoy" style="margin-top:16px">
+  <div class="ex">선배들도 이렇게 시작했어요. <b>막힌 빗물받이</b>, <b>도로의 구멍</b>, <b>아픈 가로수</b>.</div>
+</section>
+
+<!-- 2 이야기 투표 -->
+<section data-step="2">
+  <div class="label">①②③ 선배 이야기 · 내 생각</div>
+  <h1>이야기를 들으며<br>골라 보세요</h1>
+  <div class="card">
+    <h2 style="margin-top:0">Q1. 빗물받이 장치를 만든 첫 도전, 붙었을까?</h2>
+    <div class="chips" data-k="v1" data-single>
+      <button class="chip" type="button" data-v="붙었다">붙었다</button>
+      <button class="chip" type="button" data-v="떨어졌다">떨어졌다</button>
+    </div>
+  </div>
+  <div class="card">
+    <h2 style="margin-top:0">Q2. 날짜를 잘못 알아 심사도 못 받았다면, 너라면 또 할래?</h2>
+    <div class="chips" data-k="v2" data-single>
+      <button class="chip" type="button" data-v="또 한다">또 한다</button>
+      <button class="chip" type="button" data-v="고민된다">고민된다</button>
+      <button class="chip" type="button" data-v="그만한다">그만한다</button>
+    </div>
+  </div>
+  <div class="card">
+    <h2 style="margin-top:0">Q3. 죽은 가로수 한 그루를 다시 심으려면 얼마가 들까?</h2>
+    <div class="chips" data-k="v3" data-single>
+      <button class="chip" type="button" data-v="5만 원">5만 원</button>
+      <button class="chip" type="button" data-v="50만 원">50만 원</button>
+      <button class="chip" type="button" data-v="500만 원">500만 원</button>
+    </div>
+    <p class="why" id="why3">정답은 선생님 화면에서 공개해요!</p>
+  </div>
+</section>
+
+<!-- 3 ABCDE 퀴즈 -->
+<section data-step="3">
+  <div class="label">④ ABCDE 미션 · 퀴즈</div>
+  <h1>첨단산업<br>ABCDE</h1>
+  <p class="lead"><b style="color:var(--gold)">A</b>I 인공지능 · <b style="color:var(--gold)">B</b>io 생명 · <b style="color:var(--gold)">C</b>ulture 문화콘텐츠 · <b style="color:var(--gold)">D</b>efense 국방·우주 · <b style="color:var(--gold)">E</b>nergy 에너지</p>
+  <div id="quiz"></div>
+</section>
+
+<!-- 4 미션 카드 -->
+<section data-step="4">
+  <div class="label">④ ABCDE 미션 · 카드 고르기</div>
+  <h1>미션 카드를<br>하나 골라요</h1>
+  <p class="lead">마음에 드는 카드를 고르거나, 맨 아래에서 우리 동네 문제를 직접 써도 돼요.</p>
+  <div id="missions"></div>
+  <label class="f" for="own">직접 쓰기 — 내가 풀고 싶은 우리 동네 문제</label>
+  <input type="text" id="own" maxlength="40" placeholder="예: 학교 앞 횡단보도가 너무 길어요" data-k="own">
+</section>
+
+<!-- 5 고객 발견 -->
+<section data-step="5">
+  <div class="label">④ ABCDE 미션 · 고객 발견</div>
+  <h1>이 문제로 진짜<br>힘든 사람 한 명</h1>
+  <p class="lead">"모든 사람"이 아니라 딱 한 사람을 떠올려요. 그 사람이 내 첫 번째 고객이에요.</p>
+  <label class="f" for="cName">그 사람은 누구?</label>
+  <input type="text" id="cName" maxlength="20" placeholder="예: 휠체어를 타는 옆집 할머니" data-k="cName">
+  <label class="f" for="cPain">언제, 무엇이 불편할까?</label>
+  <textarea id="cPain" maxlength="80" placeholder="예: 비 오는 날 보도블록 틈에 바퀴가 걸려요" data-k="cPain"></textarea>
+</section>
+
+<!-- 6 4칸 캔버스 -->
+<section data-step="6">
+  <div class="label">④ ABCDE 미션 · 4칸 캔버스</div>
+  <h1>내 창업 아이디어<br>한 장 만들기</h1>
+  <p class="timer" id="timer"></p>
+  <div class="canvas">
+    <div class="cell"><div class="q">① 누구의 문제?</div><textarea data-k="b1" maxlength="80" placeholder="고객과 불편"></textarea></div>
+    <div class="cell"><div class="q">② 어떻게 해결?</div><textarea data-k="b2" maxlength="80" placeholder="내 해결 방법"></textarea></div>
+    <div class="cell"><div class="q">③ 왜 우리 것?</div><textarea data-k="b3" maxlength="80" placeholder="다른 것보다 좋은 점"></textarea></div>
+    <div class="cell"><div class="q">④ 돈은 누가?</div><textarea data-k="b4" maxlength="80" placeholder="누가 돈을 낼까"></textarea></div>
+  </div>
+  <details class="more">
+    <summary>＋ 더 쓰기 (중·고등학생 도전)</summary>
+    <div class="canvas">
+      <div class="cell"><div class="q">⑤ 고객에게 어떻게 알릴까?</div><textarea data-k="b5" maxlength="80"></textarea></div>
+      <div class="cell"><div class="q">⑥ 꼭 필요한 것·사람</div><textarea data-k="b6" maxlength="80"></textarea></div>
+      <div class="cell"><div class="q">⑦ 함께할 기관·파트너</div><textarea data-k="b7" maxlength="80"></textarea></div>
+      <div class="cell"><div class="q">⑧ 드는 비용</div><textarea data-k="b8" maxlength="80"></textarea></div>
+    </div>
+  </details>
+  <div class="ex">가로수 팀 예시 — ① 제설제·음료로 아픈 가로수, 관리하는 구청 ② 밑동에 까는 시트가 염분을 늦춤 ③ 전기 없이, 깔기만 하면 끝 ④ 구청이 구매</div>
+</section>
+
+<!-- 7 숫자 한 줄 -->
+<section data-step="7">
+  <div class="label">④ ABCDE 미션 · 한 줄 피칭</div>
+  <h1>숫자 두 개로<br>한 문장</h1>
+  <div class="ex"><b>"죽은 뒤 500만 원 대신, 살아 있을 때 1년 2만 원."</b><br>— 가로수 팀의 마지막 문장</div>
+  <label class="f" for="pitchA">지금은 이만큼 들어요 (대신 할 것)</label>
+  <input type="text" id="pitchA" maxlength="30" placeholder="예: 매일 20분 기다리는 대신" data-k="pA">
+  <label class="f" for="pitchB">우리 것을 쓰면</label>
+  <input type="text" id="pitchB" maxlength="30" placeholder="예: 앱으로 2분 만에" data-k="pB">
+  <p class="hint">숫자는 짐작이어도 괜찮아요. 대신 "짐작"이라고 솔직하게 말하는 게 진짜 창업가예요.</p>
+</section>
+
+<!-- 8 결과 -->
+<section data-step="8" id="result">
+  <div class="label">⑤ 마무리</div>
+  <h1>나의 첫 번째<br>창업 아이디어</h1>
+  <p class="lead">아래 그림을 길게 눌러 저장하거나, 저장 버튼을 눌러요. 친구와 선생님께 보여 주세요.</p>
+  <img id="out" alt="내 창업 아이디어 카드">
+  <button class="btn pri" type="button" id="dl" style="width:100%;margin-top:12px">그림으로 저장하기</button>
+  <p class="big" style="margin-top:22px">JUST DO IT,<br>CONTINUE.</p>
+  <p class="lead">일단 해 보고, 그리고 계속하기. 떨어져도 괜찮아요. 다시 하면 돼요.</p>
+  <button class="btn sec" type="button" id="reset" style="width:100%;margin-top:16px">처음부터 다시 쓰기</button>
+</section>
+</main>
+
+<nav class="bar">
+  <button class="btn sec" type="button" id="prev">이전</button>
+  <button class="btn pri" type="button" id="next">다음</button>
+</nav>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+const KEY='sejong-startup-mission-v1';
+let S={};
+try{S=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){S={}}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const $=(q,el=document)=>el.querySelector(q), $$=(q,el=document)=>[...el.querySelectorAll(q)];
+const steps=$$('section'); const N=steps.length;
+let cur=Math.min(+S._step||0,N-1);
+
+const MISSIONS=[
+ {k:'A',f:'AI 인공지능',t:'시각장애인을 위한 음성 안내 자판기'},
+ {k:'B',f:'Bio 생명',t:'식품 알레르기 대응 안심 급식 앱'},
+ {k:'C',f:'Culture 문화콘텐츠',t:'전통시장 숏폼 챌린지'},
+ {k:'D',f:'Defense & Aerospace',t:'소방관 구조 드론'},
+ {k:'E',f:'Energy 에너지',t:'교실 에너지 절약 챌린지'}];
+const QUIZ=[
+ {q:'ABCDE에서 B는 무엇일까?',o:['Business','Bio(생명)','Blockchain','Building'],a:1,w:'B는 Bio, 생명공학이에요. 알레르기 안심 급식 앱이 B 미션!'},
+ {q:'창업의 첫 단계 "고객 발견"은 무엇을 하는 걸까?',o:['회사를 크게 만든다','광고를 많이 한다','진짜 불편한 사람을 찾고 확인한다','물건을 먼저 많이 만든다'],a:2,w:'만들기 전에 "이게 정말 필요한 사람이 있나?"를 먼저 확인해요.'},
+ {q:'"전통시장 숏폼 챌린지"는 어느 분야일까?',o:['A 인공지능','B 생명','C 문화콘텐츠','D 국방·우주'],a:2,w:'영상·콘텐츠로 시장을 살리는 Culture(문화콘텐츠) 미션이에요.'}];
+
+// dots
+$('#dots').innerHTML=steps.map(()=>'<i></i>').join('');
+
+// quiz
+$('#quiz').innerHTML=QUIZ.map((z,i)=>`<div class="card"><h2 style="margin-top:0">Q${i+1}. ${z.q}</h2><div class="opts" data-quiz="${i}">${z.o.map((o,j)=>`<button class="opt" type="button" data-j="${j}">${o}</button>`).join('')}</div><p class="why">${z.w}</p></div>`).join('');
+$$('[data-quiz]').forEach(box=>{
+  const i=+box.dataset.quiz;
+  const mark=j=>{ $$('.opt',box).forEach(b=>{b.classList.remove('right','wrong'); const k=+b.dataset.j; if(k===QUIZ[i].a)b.classList.add('right'); else if(k===j)b.classList.add('wrong');}); box.nextElementSibling.classList.add('on'); };
+  if(S['q'+i]!=null) mark(S['q'+i]);
+  box.addEventListener('click',e=>{const b=e.target.closest('.opt'); if(!b)return; S['q'+i]=+b.dataset.j; save(); mark(+b.dataset.j);});
+});
+
+// missions
+$('#missions').innerHTML=MISSIONS.map(m=>`<button class="mission" type="button" data-m="${m.k}"><b>${m.k}</b><div><span>${m.f}</span><strong>${m.t}</strong></div></button>`).join('');
+const paintM=()=>$$('.mission').forEach(b=>b.classList.toggle('on',S.mission===b.dataset.m));
+$('#missions').addEventListener('click',e=>{const b=e.target.closest('.mission'); if(!b)return; S.mission=S.mission===b.dataset.m?'':b.dataset.m; save(); paintM();});
+paintM();
+
+// inputs
+$$('[data-k]').forEach(el=>{
+  const k=el.dataset.k;
+  if(el.matches('input,textarea')){ if(S[k])el.value=S[k]; el.addEventListener('input',()=>{S[k]=el.value; save();}); }
+  else if(el.hasAttribute('data-single')){
+    const paint=()=>$$('.chip',el).forEach(c=>c.classList.toggle('on',S[k]===c.dataset.v));
+    paint(); el.addEventListener('click',e=>{const c=e.target.closest('.chip'); if(!c)return; S[k]=c.dataset.v; save(); paint(); if(k==='v3')$('#why3').classList.add('on');});
+  }
+});
+if(S.v3)$('#why3').classList.add('on');
+
+// timer on canvas step
+let tStart=null,tInt=null;
+function startTimer(){ if(tInt)return; tStart=tStart||Date.now(); tInt=setInterval(()=>{const left=Math.max(0,360-Math.floor((Date.now()-tStart)/1000)); $('#timer').textContent=left>0?`남은 시간 ${Math.floor(left/60)}:${String(left%60).padStart(2,'0')}`:'시간 끝! 다 못 써도 괜찮아요'; if(!left){clearInterval(tInt);}},500); }
+
+function toast(t){const el=$('#toast'); el.textContent=t; el.classList.add('on'); setTimeout(()=>el.classList.remove('on'),1600);}
+
+function show(i){
+  cur=Math.max(0,Math.min(N-1,i)); S._step=cur; save();
+  steps.forEach((s,j)=>s.classList.toggle('on',j===cur));
+  $$('#dots i').forEach((d,j)=>d.classList.toggle('on',j<=cur));
+  $('#prev').style.visibility=cur?'visible':'hidden';
+  $('#next').style.display=cur===N-1?'none':'block';
+  $('#next').textContent=cur===N-2?'완성하기':'다음';
+  if(cur===6)startTimer();
+  if(cur===N-1)render();
+  window.scrollTo({top:0,behavior:'instant'});
+}
+$('#prev').onclick=()=>show(cur-1);
+$('#next').onclick=()=>{ if(cur===0&&!(S.nick||'').trim()){toast('별명을 먼저 써 주세요'); $('#nick').focus(); return;} show(cur+1); };
+$('#reset').onclick=()=>{ if(!confirm('쓴 내용을 모두 지울까요?'))return; S={}; save(); location.reload(); };
+
+// result card image
+function wrap(ctx,text,x,y,maxW,lh,maxLines){
+  const chars=[...(text||'').replace(/\s+/g,' ').trim()]; let line='',lines=[];
+  for(const ch of chars){ const t=line+ch; if(ctx.measureText(t).width>maxW&&line){lines.push(line);line=ch;} else line=t; }
+  if(line)lines.push(line);
+  if(lines.length>maxLines){lines=lines.slice(0,maxLines); lines[maxLines-1]=lines[maxLines-1].slice(0,-1)+'…';}
+  lines.forEach((l,i)=>ctx.fillText(l,x,y+i*lh)); return lines.length;
+}
+function render(){
+  const W=1080,H=1350,c=document.createElement('canvas'); c.width=W;c.height=H; const x=c.getContext('2d');
+  x.fillStyle='#1D1A16'; x.fillRect(0,0,W,H);
+  x.strokeStyle='#EBCB94'; x.lineWidth=3; x.strokeRect(36,36,W-72,H-72);
+  const m=MISSIONS.find(v=>v.k===S.mission);
+  x.fillStyle='#EBCB94'; x.font='500 30px "Noto Sans KR"'; x.fillText('우리 동네 창업 미션 · '+(S.grade||'')+' '+(S.nick||''),80,110);
+  x.fillStyle='#F6F3EE'; x.font='800 60px "Nanum Myeongjo"';
+  const title=(S.own||'').trim()||(m?m.t:'나의 창업 아이디어');
+  const tl=wrap(x,title,80,200,W-160,76,2);
+  let y=200+tl*76+10;
+  if(m){x.fillStyle='#B9B1A5'; x.font='400 28px "Noto Sans KR"'; x.fillText('미션 카드 '+m.k+' · '+m.f,80,y); y+=50;}
+  if(S.cName){x.fillStyle='#B9B1A5'; x.font='400 28px "Noto Sans KR"'; wrap(x,'첫 고객: '+S.cName+(S.cPain?' — '+S.cPain:''),80,y,W-160,40,2); y+=96;}
+  const box=[['① 누구의 문제?',S.b1],['② 어떻게 해결?',S.b2],['③ 왜 우리 것?',S.b3],['④ 돈은 누가?',S.b4]];
+  const bw=(W-160-24)/2, bh=300;
+  box.forEach((b,i)=>{const bx=80+(i%2)*(bw+24), by=y+Math.floor(i/2)*(bh+24);
+    x.fillStyle='#27231E'; x.fillRect(bx,by,bw,bh); x.strokeStyle='#3A342C'; x.lineWidth=2; x.strokeRect(bx,by,bw,bh);
+    x.fillStyle='#EBCB94'; x.font='700 28px "Noto Sans KR"'; x.fillText(b[0],bx+24,by+50);
+    x.fillStyle='#F6F3EE'; x.font='400 28px "Noto Sans KR"'; wrap(x,b[1]||'',bx+24,by+100,bw-48,40,5);});
+  y+=2*bh+24+70;
+  if(S.pA||S.pB){x.fillStyle='#F2B45A'; x.font='800 40px "Nanum Myeongjo"'; wrap(x,'"'+[S.pA,S.pB].filter(Boolean).join(', ')+'"',80,y,W-160,54,2);}
+  x.fillStyle='#EBCB94'; x.font='500 26px "Noto Sans KR"'; x.fillText('JUST DO IT · CONTINUE',80,H-80);
+  const url=c.toDataURL('image/png'); $('#out').src=url;
+  $('#dl').onclick=()=>{const a=document.createElement('a'); a.href=url; a.download='my-startup-idea.png'; document.body.appendChild(a); a.click(); a.remove();};
+}
+(document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(()=>show(cur));
+})();
+</script>
+</body>
+</html>
