@@ -273,7 +273,7 @@ function show(i){
   $('#next').style.display=cur===N-1?'none':'block';
   $('#next').textContent=cur===N-2?'완성하기':'다음';
   if(cur===6)startTimer();
-  if(cur===N-1)render();
+  if(cur===N-1){ const fl=document.fonts&&document.fonts.load?Promise.all(['800 60px "Nanum Myeongjo"','400 28px "Noto Sans KR"','700 28px "Noto Sans KR"'].map(f=>document.fonts.load(f,'가'))).catch(()=>{}):Promise.resolve(); fl.then(render); }
   window.scrollTo({top:0,behavior:'instant'});
 }
 $('#prev').onclick=()=>show(cur-1);
