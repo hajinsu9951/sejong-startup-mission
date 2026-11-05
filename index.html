@@ -48,13 +48,17 @@ input:focus,textarea:focus{border-color:var(--gold)}
 .canvas{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
 .cell{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px}
 .cell .q{font-size:13px;color:var(--gold);margin-bottom:6px}
-.cell textarea{min-height:110px;font-size:15px;padding:10px;background:#14120F}
+.cell textarea{min-height:110px;font-size:16px;padding:10px;background:#14120F}
 .more{margin-top:12px}
 .more summary{color:var(--gold);font-size:15px;cursor:pointer;padding:8px 0}
 .hint{font-size:14px;color:var(--sub);line-height:1.5;margin-top:8px}
 .ex{border-left:3px solid var(--gold);padding:8px 12px;margin-top:12px;color:var(--sub);font-size:15px;line-height:1.6}
 .ex b{color:var(--ink)}
-nav.bar{position:fixed;left:0;right:0;bottom:0;z-index:6;background:linear-gradient(transparent,var(--bg) 30%);padding:18px 16px calc(14px + env(safe-area-inset-bottom));display:flex;gap:10px;max-width:592px;margin:0 auto}
+nav.bar{position:fixed;left:0;right:0;bottom:0;z-index:6;background:linear-gradient(transparent,var(--bg) 30%);padding:18px 16px calc(14px + env(safe-area-inset-bottom));display:flex;gap:10px;max-width:592px;margin:0 auto;pointer-events:none}
+nav.bar .btn{pointer-events:auto}
+body.typing nav.bar{display:none}
+body.typing{padding-bottom:45vh}
+.imgst{font-size:14px;color:var(--sub);margin-top:10px;line-height:1.5}
 .btn{flex:1;border:0;border-radius:14px;padding:16px;font:inherit;font-size:17px;font-weight:700;cursor:pointer}
 .btn.pri{background:var(--gold);color:var(--bg)}
 .btn.sec{background:var(--card);color:var(--ink);border:1px solid var(--line);flex:0 0 34%}
@@ -196,6 +200,8 @@ nav.bar{position:fixed;left:0;right:0;bottom:0;z-index:6;background:linear-gradi
   <h1>나의 첫 번째<br>창업 아이디어</h1>
   <p class="lead">아래 그림을 길게 눌러 저장하거나, 저장 버튼을 눌러요. 친구와 선생님께 보여 주세요.</p>
   <img id="out" alt="내 창업 아이디어 카드">
+  <p class="imgst" id="imgst"></p>
+  <button class="btn sec" type="button" id="regen" style="width:100%;margin-top:8px">🎨 그림 다시 만들기</button>
   <button class="btn pri" type="button" id="dl" style="width:100%;margin-top:12px">그림으로 저장하기</button>
   <p class="big" style="margin-top:22px">JUST DO IT,<br>CONTINUE.</p>
   <p class="lead">일단 해 보고, 그리고 계속하기. 떨어져도 괜찮아요. 다시 하면 돼요.</p>
@@ -259,6 +265,10 @@ $$('[data-k]').forEach(el=>{
 });
 if(S.v3)$('#why3').classList.add('on');
 
+// typing: hide the bottom bar so it never covers the field, and keep the field in view above the keyboard
+document.addEventListener('focusin',e=>{ if(!e.target.matches('input,textarea'))return; document.body.classList.add('typing'); setTimeout(()=>{try{e.target.scrollIntoView({block:'center',behavior:'smooth'})}catch(_){}} ,350); });
+document.addEventListener('focusout',()=>setTimeout(()=>{ if(!document.activeElement||!document.activeElement.matches('input,textarea'))document.body.classList.remove('typing'); },150));
+
 // timer on canvas step
 let tStart=null,tInt=null;
 function startTimer(){ if(tInt)return; tStart=tStart||Date.now(); tInt=setInterval(()=>{const left=Math.max(0,360-Math.floor((Date.now()-tStart)/1000)); $('#timer').textContent=left>0?`남은 시간 ${Math.floor(left/60)}:${String(left%60).padStart(2,'0')}`:'시간 끝! 다 못 써도 괜찮아요'; if(!left){clearInterval(tInt);}},500); }
@@ -273,7 +283,7 @@ function show(i){
   $('#next').style.display=cur===N-1?'none':'block';
   $('#next').textContent=cur===N-2?'완성하기':'다음';
   if(cur===6)startTimer();
-  if(cur===N-1){ const fl=document.fonts&&document.fonts.load?Promise.all(['800 60px "Nanum Myeongjo"','400 28px "Noto Sans KR"','700 28px "Noto Sans KR"'].map(f=>document.fonts.load(f,'가'))).catch(()=>{}):Promise.resolve(); fl.then(render); }
+  if(cur===N-1){ const fl=document.fonts&&document.fonts.load?Promise.all(['800 60px "Nanum Myeongjo"','400 28px "Noto Sans KR"','700 28px "Noto Sans KR"'].map(f=>document.fonts.load(f,'가'))).catch(()=>{}):Promise.resolve(); fl.then(()=>makePic(false)); }
   window.scrollTo({top:0,behavior:'instant'});
 }
 $('#prev').onclick=()=>show(cur-1);
@@ -288,8 +298,27 @@ function wrap(ctx,text,x,y,maxW,lh,maxLines){
   if(lines.length>maxLines){lines=lines.slice(0,maxLines); lines[maxLines-1]=lines[maxLines-1].slice(0,-1)+'…';}
   lines.forEach((l,i)=>ctx.fillText(l,x,y+i*lh)); return lines.length;
 }
+// AI picture from what the student wrote (Pollinations, free, no key). Nickname is never sent.
+let PIC=null, picKey='', picSeed=Math.floor(Math.random()*1e6);
+function picPrompt(){
+  const m=MISSIONS.find(v=>v.k===S.mission);
+  const idea=[(S.own||'').trim()||(m?m.t:''), S.b1, S.b2, S.cPain].filter(Boolean).join('. ').slice(0,300);
+  return 'Warm, friendly, colorful flat illustration for a student startup idea, cozy golden light, no text, no letters, no words. Idea: '+idea;
+}
+function makePic(force){
+  const pr=picPrompt(); const key=pr+'|'+picSeed;
+  if(!force&&key===picKey)return; picKey=key; PIC=null;
+  $('#imgst').textContent='🎨 내가 쓴 글로 그림을 만들고 있어요… (10~30초)'; render();
+  const im=new Image(); im.crossOrigin='anonymous';
+  const t=setTimeout(()=>{ if(picKey===key&&!PIC)$('#imgst').textContent='그림이 늦어지고 있어요. 조금 뒤 "그림 다시 만들기"를 눌러 보세요.'; },45000);
+  im.onload=()=>{ clearTimeout(t); if(picKey!==key)return; PIC=im; $('#imgst').textContent='✨ 내 아이디어 그림이 완성됐어요! 마음에 안 들면 다시 만들어 보세요.'; render(); };
+  im.onerror=()=>{ clearTimeout(t); if(picKey!==key)return; $('#imgst').textContent='그림을 만들지 못했어요. 인터넷을 확인하고 "그림 다시 만들기"를 눌러 보세요.'; };
+  im.src='https://image.pollinations.ai/prompt/'+encodeURIComponent(pr)+'?width=960&height=540&nologo=true&safe=true&enhance=true&seed='+picSeed;
+}
+$('#regen').onclick=()=>{ picSeed=Math.floor(Math.random()*1e6); makePic(true); };
+
 function render(){
-  const W=1080,H=1350,c=document.createElement('canvas'); c.width=W;c.height=H; const x=c.getContext('2d');
+  const W=1080,H=1960,c=document.createElement('canvas'); c.width=W;c.height=H; const x=c.getContext('2d');
   x.fillStyle='#1D1A16'; x.fillRect(0,0,W,H);
   x.strokeStyle='#EBCB94'; x.lineWidth=3; x.strokeRect(36,36,W-72,H-72);
   const m=MISSIONS.find(v=>v.k===S.mission);
@@ -300,6 +329,11 @@ function render(){
   let y=200+tl*76+10;
   if(m){x.fillStyle='#B9B1A5'; x.font='400 28px "Noto Sans KR"'; x.fillText('미션 카드 '+m.k+' · '+m.f,80,y); y+=50;}
   if(S.cName){x.fillStyle='#B9B1A5'; x.font='400 28px "Noto Sans KR"'; wrap(x,'첫 고객: '+S.cName+(S.cPain?' — '+S.cPain:''),80,y,W-160,40,2); y+=96;}
+  { const px=80,pw=W-160,ph=Math.round(pw*9/16);
+    x.fillStyle='#27231E'; x.fillRect(px,y,pw,ph);
+    if(PIC){ x.drawImage(PIC,px,y,pw,ph); }
+    else { x.fillStyle='#B9B1A5'; x.font='400 30px "Noto Sans KR"'; x.textAlign='center'; x.fillText('🎨 그림을 만드는 중…',W/2,y+ph/2); x.textAlign='left'; }
+    x.strokeStyle='#EBCB94'; x.lineWidth=2; x.strokeRect(px,y,pw,ph); y+=ph+30; }
   const box=[['① 누구의 문제?',S.b1],['② 어떻게 해결?',S.b2],['③ 왜 우리 것?',S.b3],['④ 돈은 누가?',S.b4]];
   const bw=(W-160-24)/2, bh=300;
   box.forEach((b,i)=>{const bx=80+(i%2)*(bw+24), by=y+Math.floor(i/2)*(bh+24);
@@ -309,7 +343,8 @@ function render(){
   y+=2*bh+24+70;
   if(S.pA||S.pB){x.fillStyle='#F2B45A'; x.font='800 40px "Nanum Myeongjo"'; wrap(x,'"'+[S.pA,S.pB].filter(Boolean).join(', ')+'"',80,y,W-160,54,2);}
   x.fillStyle='#EBCB94'; x.font='500 26px "Noto Sans KR"'; x.fillText('JUST DO IT · CONTINUE',80,H-80);
-  const url=c.toDataURL('image/png'); $('#out').src=url;
+  let url; try{ url=c.toDataURL('image/png'); }catch(e){ PIC=null; return render(); }
+  $('#out').src=url;
   $('#dl').onclick=()=>{const a=document.createElement('a'); a.href=url; a.download='my-startup-idea.png'; document.body.appendChild(a); a.click(); a.remove();};
 }
 (document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(()=>show(cur));
